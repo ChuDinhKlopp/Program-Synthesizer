@@ -23,6 +23,7 @@ class ProgramSynthesizer(nn.Module):
             nn.ReLU(),
             nn.Linear(256, max_sequence_len * d_model)
         )
+        self.enc_dim_reduction.apply(self.weights_init)
         # self.enc_dim_reduction = nn.Linear(in_features=768, out_features=d_model)
         # self.enc_dim_relu = nn.ReLU()
         # self.enc_len_reduction = nn.Linear(in_features=512, out_features=max_sequence_len)
@@ -45,6 +46,10 @@ class ProgramSynthesizer(nn.Module):
         self.ckpt_dir = ckpt_dir
         self.ckpt_file = os.path.join(self.ckpt_dir, self.name + '.pt')
         self.debug = debug
+    
+    def weights_init(self, m):
+        if isinstance(m, nn.Linear):
+            nn.init.kaiming_uniform_(m.weight, mode='fan_in', nonlinearity='relu')
 
     def forward(self, enc_inputs, dec_inputs):
         enc_out = self.encoder(**enc_inputs).last_hidden_state
