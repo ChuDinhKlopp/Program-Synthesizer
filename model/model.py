@@ -32,12 +32,12 @@ class ProgramSynthesizer(nn.Module):
         #nn.init.kaiming_uniform_(self.enc_dim_reduction.weight, mode='fan_in', nonlinearity='relu')
         #nn.init.kaiming_uniform_(self.enc_len_reduction.weight, mode='fan_in', nonlinearity='relu')
         # Decoder
-        self.decoder = Decoder(d_model=d_model, max_sequence_len=max_sequence_len, n_layers=n_layers, vocab_size=len(self._dictionary._vocabulary), pad_idx=self._dictionary._vocabulary['<pad>'], n_head=n_head, d_k=int(d_model/n_head), d_v=int(d_model/n_head), debug=debug)
+        self.decoder = Decoder(d_model=d_model, max_sequence_len=max_sequence_len, n_layers=n_layers, vocab_size=len(self._dictionary._vocabulary), pad_idx=self._dictionary._vocabulary['<pad>'], n_head=n_head, d_k=int(d_model/n_head), d_v=int(d_model/n_head), debug=debug, dropout=0.01)
         # Classification head
         self.linear_head = nn.Sequential(
-            nn.Linear(in_features=d_model, out_features=d_model*2), # out_features = vocab size
+            nn.Linear(in_features=d_model, out_features=d_model*4), # out_features = vocab size
             nn.ReLU(),
-            nn.Linear(in_features=d_model*2, out_features=d_model*2),
+            nn.Linear(in_features=d_model*4, out_features=d_model*2),
             nn.ReLU(),
             nn.Linear(in_features=d_model*2, out_features=len(self._dictionary._vocabulary))
         )

@@ -66,7 +66,7 @@ class Decoder(nn.Module):
         super().__init__()
         self.word_emb = Embedding(vocab_size=vocab_size, embed_dim=d_model, padding_idx=pad_idx)
         self.pos_emb = PositionalEmbedding(max_seq_len=max_sequence_len, embed_model_dim=d_model, debug=debug)
-        decoder_layer = DecoderLayer(n_head=n_head, d_model=d_model, n_layers=n_layers, d_k=d_k, d_v=d_v, debug=debug)
+        decoder_layer = DecoderLayer(n_head=n_head, d_model=d_model, n_layers=n_layers, d_k=d_k, d_v=d_v, debug=debug, dropout=dropout)
         self.layer_stack = nn.ModuleList([
             DecoderLayer(n_head=n_head, d_model=d_model, n_layers=n_layers, d_k=d_k, d_v=d_v, debug=debug)
             # copy.deepcopy(decoder_layer)

@@ -60,7 +60,7 @@ class MultiHeadAttention(nn.Module):
         nn.init.kaiming_uniform_(self.w_v.weight, mode='fan_in', nonlinearity='relu')
         nn.init.normal_(self.fc.weight, mean=0.0, std=0.02/math.sqrt(2 * n_layers))
 
-        self.scaled_dot_product = ScaledDotProduct(temperature=d_k**0.5)
+        self.scaled_dot_product = ScaledDotProduct(temperature=d_k**0.5, attn_dropout=dropout)
 
         self.dropout = nn.Dropout(dropout)
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
