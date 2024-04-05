@@ -53,10 +53,10 @@ class Trainer:
                 print(f"trainer.py enc_inputs: {enc_inputs}")
             # forward pass
             preds = self.model(enc_inputs=enc_inputs, dec_inputs=dec_inputs)
-
-            print(f"trainer.py raw preds: {preds}")
-            print(f"trainer.py argmax preds: {torch.argmax(preds, dim=2)}")
-            print(f"trainer.py targets: {target_ids['input_ids']}")
+            if self.debug:
+                print(f"trainer.py raw preds: {preds}")
+            res = "\n".join("preds: {}   targets: {}".format(x, y) for x, y in zip(torch.argmax(preds, dim=2), target_ids['input_ids']))
+            print(res)
             # loss
             loss = self._compute_loss(preds, target_ids['input_ids'])
             print(f"Batch {i} - Training loss: {loss}")
@@ -102,10 +102,10 @@ class Trainer:
             # Define data loaders for training and testing data in this fold
             train_loader = torch.utils.data.DataLoader(
                               dataset, collate_fn=collator,
-                              batch_size=32, sampler=train_subsampler)
+                              batch_size=2, sampler=train_subsampler)
             val_loader = torch.utils.data.DataLoader(
                               dataset, collate_fn=collator,
-                              batch_size=32, sampler=val_subsampler)
+                              batch_size=2, sampler=val_subsampler)
             for i, epoch in enumerate(range(epochs)):
                 print(f"Epoch {i}")
                 # train
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     #train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True, collate_fn=collator)
     #val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True, collate_fn=collator)
 
-    model = ProgramSynthesizer(d_model=6, n_head=1, max_sequence_len=7, n_layers=2, name='model_v1.0', ckpt_dir="./ckpt", debug=True)
+    model = ProgramSynthesizer(d_model=96, n_head=1, max_sequence_len=7, n_layers=16, name='model_v1.0', ckpt_dir="./ckpt", debug=False)
 
     continue_from_ckpt = input("Continue training from checkpoint [y/n]? ")
     if continue_from_ckpt == 'y':
