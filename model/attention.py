@@ -26,8 +26,8 @@ class ScaledDotProduct(nn.Module):
                 print(f"attention.py mask in scaled_dot_product: {mask}")
                 print(f"attention.py attn.masked_fill: {attn}")
 
-        # attn = self.dropout(F.softmax(attn, dim=-1))
-        attn = F.softmax(attn, dim=-1)
+        attn = self.dropout(F.softmax(attn, dim=-1))
+        #attn = F.softmax(attn, dim=-1)
         if self.debug:
             print(f"attention.py attention after softmax and dropout: {attn}")
         if mask is not None:
