@@ -23,23 +23,16 @@ class ProgramSynthesizer(nn.Module):
             nn.ReLU(),
             nn.Linear(256, max_sequence_len * d_model)
         )
-        self.enc_dim_reduction.apply(self.weights_init)
-        # self.enc_dim_reduction = nn.Linear(in_features=768, out_features=d_model)
-        # self.enc_dim_relu = nn.ReLU()
-        # self.enc_len_reduction = nn.Linear(in_features=512, out_features=max_sequence_len)
-        # self.enc_len_relu = nn.ReLU()
-        # Weight initialization
-        #nn.init.kaiming_uniform_(self.enc_dim_reduction.weight, mode='fan_in', nonlinearity='relu')
-        #nn.init.kaiming_uniform_(self.enc_len_reduction.weight, mode='fan_in', nonlinearity='relu')
+        # self.enc_dim_reduction.apply(self.weights_init)
         # Decoder
         self.decoder = Decoder(d_model=d_model, max_sequence_len=max_sequence_len, n_layers=n_layers, vocab_size=len(self._dictionary._vocabulary), pad_idx=self._dictionary._vocabulary['<pad>'], n_head=n_head, d_k=int(d_model/n_head), d_v=int(d_model/n_head), debug=debug, dropout=0.01)
         # Classification head
         self.linear_head = nn.Sequential(
             nn.Linear(in_features=d_model, out_features=d_model*4), # out_features = vocab size
             nn.ReLU(),
-            nn.Linear(in_features=d_model*4, out_features=d_model*2),
+            nn.Linear(in_features=d_model*4, out_features=d_model*4),
             nn.ReLU(),
-            nn.Linear(in_features=d_model*2, out_features=len(self._dictionary._vocabulary))
+            nn.Linear(in_features=d_model*4, out_features=len(self._dictionary._vocabulary))
         )
         # Utils
         self.name = name
@@ -56,9 +49,6 @@ class ProgramSynthesizer(nn.Module):
         enc_out = enc_out.reshape((-1, self.encoder.config.max_position_embeddings * self.encoder.config.dim))
         enc_out = self.enc_dim_reduction(enc_out)
         enc_out = enc_out.reshape((-1, self.max_sequence_len, self.d_model))
-        #enc_out = self.enc_dim_relu(self.enc_dim_reduction(self.encoder(**enc_inputs).last_hidden_state))
-        #enc_out = self.enc_len_relu(self.enc_len_reduction(enc_out.transpose(1, 2)))
-        #enc_out = enc_out.transpose(1, 2)
         if self.debug:
             print(f"model.py enc_out: {enc_out}")
         last_hidden_state = self.decoder(enc_out, **dec_inputs)['last_hidden_state'] # (batch_size, max_sequence_len, d_model)
