@@ -16,7 +16,7 @@ class PositionwiseFeedForward(nn.Module):
         nn.init.kaiming_uniform_(self.fc2.weight, mode='fan_in', nonlinearity='relu')
         nn.init.normal_(self.fc3.weight, mean=0.0, std=0.02/math.sqrt(2 * n_layers))
 
-        self.layernorm = nn.LayerNorm(d_in, eps=1e-6)
+        self.layernorm = nn.LayerNorm(d_in, eps=1e-12)
         # using dropout to prevent overfitting
         self.dropout = nn.Dropout(dropout)
         self.gelu = nn.GELU()
@@ -72,7 +72,7 @@ class Decoder(nn.Module):
             # copy.deepcopy(decoder_layer)
             for _ in range(n_layers)])
         # Handle Add and Norm between decoder layers
-        self.norm = nn.LayerNorm(d_model, eps=1e-6)
+        self.norm = nn.LayerNorm(d_model, eps=1e-12)
         self.dropout = nn.Dropout(dropout)
         self.d_model = d_model
         self.n_head = n_head
@@ -88,22 +88,20 @@ class Decoder(nn.Module):
         attention_mask = attention_mask.unsqueeze(1)
         # attention_mask = torch.matmul(attention_mask.transpose(1, 2), attention_mask)
         attention_mask = attention_mask.repeat(1, attention_mask.size(2), 1)
-        print(f"decoder.py attention_mask with pads: {attention_mask}")
         attention_mask = attention_mask.unsqueeze(1).expand(-1, self.n_head, -1, -1) # add n_head dimension to the mask so it matches the decoder input dimension
         #causal_mask = torch.full((input_ids.size(0), self.n_head, input_ids.size(1), input_ids.size(1)), float(1))
         causal_mask = torch.tril(attention_mask, diagonal=0).to(self.device)
-        print(causal_mask)
         # Word embedding + Positional Embedding
         x = self.pos_emb(self.word_emb(input_ids)) # (batch_size, max_sequence_len, d_model)
         if self.debug:
             print(f"decoder.py x after pos+word-emb: {x}")
         # Dropout + LayerNorm
-        #x = self.dropout(x)
-        if self.debug:
-            print(f"decoder.py x after dropout: {x}")
-        #x = self.norm(x)
+        x = self.norm(x)
         if self.debug:
             print(f"decoder.py x after dropout and layernorm: {x}")
+        x = self.dropout(x)
+        if self.debug:
+            print(f"decoder.py x after dropout: {x}")
         # Decoder layer stack
         for i, layer in enumerate(self.layer_stack):
             if self.debug:

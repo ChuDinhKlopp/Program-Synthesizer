@@ -64,6 +64,7 @@ class PositionalEmbedding(nn.Module):
         if self.debug:
             print(f"symbol_embeddings.py x.size: {x.shape}")
         x = x + torch.autograd.Variable(self.pos_emb[:, :seq_len], requires_grad=False)
+        print(f"symbol_embeddings.py x.requires_grad: {x.requires_grad}")
         if self.debug:
             print(f"symbol_embeddings.py pos+word x: {x}")
         return x
