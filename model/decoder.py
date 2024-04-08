@@ -86,8 +86,8 @@ class Decoder(nn.Module):
             dec_in: tokenized sequences of size (batch_size, max_sequence_len)
         """
         attention_mask = attention_mask.unsqueeze(1)
-        # attention_mask = torch.matmul(attention_mask.transpose(1, 2), attention_mask)
-        attention_mask = attention_mask.repeat(1, attention_mask.size(2), 1)
+        attention_mask = torch.matmul(attention_mask.transpose(1, 2), attention_mask)
+        # attention_mask = attention_mask.repeat(1, attention_mask.size(2), 1)
         attention_mask = attention_mask.unsqueeze(1).expand(-1, self.n_head, -1, -1) # add n_head dimension to the mask so it matches the decoder input dimension
         #causal_mask = torch.full((input_ids.size(0), self.n_head, input_ids.size(1), input_ids.size(1)), float(1))
         causal_mask = torch.tril(attention_mask, diagonal=0).to(self.device)

@@ -116,9 +116,9 @@ class Trainer:
                 
                 self.train_losses.append(train_loss)
                 self.val_losses.append(val_loss)
+            self.model.save_checkpoint()
 
         total_training_time = time.time() - start_training_time
-        self.model.save_checkpoint()
 
 
 if __name__ == "__main__":
