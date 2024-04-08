@@ -63,7 +63,7 @@ class MultiHeadAttention(nn.Module):
         self.scaled_dot_product = ScaledDotProduct(temperature=d_k**0.5, attn_dropout=dropout)
 
         self.dropout = nn.Dropout(dropout)
-        self.layer_norm = nn.LayerNorm(d_model, eps=1e-12)
+        self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
 
         self.debug = debug
 

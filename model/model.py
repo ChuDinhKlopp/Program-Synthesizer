@@ -30,9 +30,9 @@ class ProgramSynthesizer(nn.Module):
         self.linear_head = nn.Sequential(
             nn.Linear(in_features=d_model, out_features=d_model*4), # out_features = vocab size
             nn.ReLU(),
-            nn.Linear(in_features=d_model*4, out_features=d_model*4),
+            nn.Linear(in_features=d_model*4, out_features=d_model*2),
             nn.ReLU(),
-            nn.Linear(in_features=d_model*4, out_features=len(self._dictionary._vocabulary))
+            nn.Linear(in_features=d_model*2, out_features=len(self._dictionary._vocabulary))
         )
         # Utils
         self.name = name

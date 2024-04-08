@@ -132,7 +132,7 @@ if __name__ == "__main__":
     #train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True, collate_fn=collator)
     #val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True, collate_fn=collator)
 
-    model = ProgramSynthesizer(d_model=96, n_head=1, max_sequence_len=7, n_layers=16, name='model_v1.0', ckpt_dir="./ckpt", debug=False)
+    model = ProgramSynthesizer(d_model=96, n_head=1, max_sequence_len=7, n_layers=12, name='model_v1.0', ckpt_dir="./ckpt", debug=False)
 
     continue_from_ckpt = input("Continue training from checkpoint [y/n]? ")
     if continue_from_ckpt == 'y':
@@ -147,4 +147,4 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     trainer = Trainer(model=model, criterion=criterion, optimizer=optimizer, device=device, debug=False)
-    trainer.fit(train_dataset, val_dataset, collator=collator, k_folds=5, epochs=10)
+    trainer.fit(train_dataset, val_dataset, collator=collator, k_folds=5, epochs=2)

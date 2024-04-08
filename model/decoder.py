@@ -16,7 +16,7 @@ class PositionwiseFeedForward(nn.Module):
         nn.init.kaiming_uniform_(self.fc2.weight, mode='fan_in', nonlinearity='relu')
         nn.init.normal_(self.fc3.weight, mean=0.0, std=0.02/math.sqrt(2 * n_layers))
 
-        self.layernorm = nn.LayerNorm(d_in, eps=1e-12)
+        self.layernorm = nn.LayerNorm(d_in, eps=1e-6)
         # using dropout to prevent overfitting
         self.dropout = nn.Dropout(dropout)
         self.gelu = nn.GELU()
@@ -72,7 +72,7 @@ class Decoder(nn.Module):
             # copy.deepcopy(decoder_layer)
             for _ in range(n_layers)])
         # Handle Add and Norm between decoder layers
-        self.norm = nn.LayerNorm(d_model, eps=1e-12)
+        self.norm = nn.LayerNorm(d_model, eps=1e-6)
         self.dropout = nn.Dropout(dropout)
         self.d_model = d_model
         self.n_head = n_head
