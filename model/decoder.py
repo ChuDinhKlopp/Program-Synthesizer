@@ -55,11 +55,12 @@ class DecoderLayer(nn.Module):
         self.ffn = PositionwiseFeedForward(d_in=d_model, d_hid=d_model*8, n_layers=n_layers, dropout=dropout)
 
     def forward(self, decoder_input, encoder_output, slf_attn_mask=None, cross_attn_mask=None):
-        dec_output, dec_slf_attn = self.masked_attn(q=decoder_input, k=decoder_input, v=decoder_input, mask=slf_attn_mask)
-        dec_output, enc_dec_cross_attn = self.cross_attn(q=dec_output, k=encoder_output, v=encoder_output, mask=cross_attn_mask)
+        #dec_output, dec_slf_attn = self.masked_attn(q=decoder_input, k=decoder_input, v=decoder_input, mask=slf_attn_mask)
+        dec_output, enc_dec_cross_attn = self.cross_attn(q=decoder_input, k=encoder_output, v=encoder_output, mask=cross_attn_mask)
         dec_output = self.ffn(dec_output)
 
-        return dec_output, dec_slf_attn, enc_dec_cross_attn
+        #return dec_output, dec_slf_attn, enc_dec_cross_attn
+        return dec_output, 1, enc_dec_cross_attn
 
 class Decoder(nn.Module):
     def __init__(self, d_model, max_sequence_len, n_layers, vocab_size, pad_idx, n_head, d_k, d_v, dropout=0.1, debug=False):
@@ -106,6 +107,6 @@ class Decoder(nn.Module):
         for i, layer in enumerate(self.layer_stack):
             if self.debug:
                 print(f"decoder.py step {i}")
-            x, _, _ = layer(decoder_input=x, encoder_output=enc_out, slf_attn_mask=causal_mask, cross_attn_mask=None)
+            x, _, _ = layer(decoder_input=x, encoder_output=enc_out, slf_attn_mask=causal_mask, cross_attn_mask=causal_mask)
         
         return {"last_hidden_state": x}
